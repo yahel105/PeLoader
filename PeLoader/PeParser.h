@@ -10,6 +10,7 @@ public:
 	PIMAGE_DOS_HEADER getDosHeader() const;
 	PIMAGE_NT_HEADERS getNtHeader() const;
 	PIMAGE_SECTION_HEADER getSectionHeader() const;
+	PIMAGE_DATA_DIRECTORY getDataDir() const;
 private:
 	PVOID m_pBase;
 	size_t m_fileSize;

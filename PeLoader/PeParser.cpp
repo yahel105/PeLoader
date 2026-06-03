@@ -23,3 +23,8 @@ PIMAGE_SECTION_HEADER PeParser::getSectionHeader() const
 {
     return IMAGE_FIRST_SECTION(getNtHeader());
 }
+
+PIMAGE_DATA_DIRECTORY PeParser::getDataDir() const
+{
+    return resolve_rva<PIMAGE_DATA_DIRECTORY>(m_pBase, getNtHeader()->OptionalHeader.DataDirectory->VirtualAddress);
+}
