@@ -31,5 +31,5 @@ PIMAGE_SECTION_HEADER PeParser::getSectionHeader() const
 
 PIMAGE_DATA_DIRECTORY PeParser::getDataDir() const
 {
-    return resolve_rva<PIMAGE_DATA_DIRECTORY>(m_pBase, getNtHeader()->OptionalHeader.DataDirectory->VirtualAddress);
+    return getNtHeader()->OptionalHeader.DataDirectory;
 }
