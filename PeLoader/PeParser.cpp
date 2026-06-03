@@ -1,0 +1,25 @@
+#include <iostream>
+#include <vector>
+#include <Windows.h>
+#include "PeParser.h"
+#include "Utility.h"
+
+PeParser::PeParser(const std::vector<char>& peFile) : 
+    m_pBase(const_cast<PVOID>(static_cast<LPCVOID>(peFile.data()))), 
+    m_fileSize{peFile.size()}{}
+
+PIMAGE_DOS_HEADER PeParser::getDosHeader() const 
+{
+
+    return resolve_rva<PIMAGE_DOS_HEADER>(m_pBase,0);
+}
+
+PIMAGE_NT_HEADERS PeParser::getNtHeader() const
+{
+    return resolve_rva<PIMAGE_NT_HEADERS>(m_pBase, getDosHeader()->e_lfanew);
+}
+
+PIMAGE_SECTION_HEADER PeParser::getSectionHeader() const
+{
+    return IMAGE_FIRST_SECTION(getNtHeader());
+}
