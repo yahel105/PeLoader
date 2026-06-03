@@ -8,7 +8,7 @@ private:
 	const PeParser& m_peParser;
 	PVOID m_peBase;
 
-	bool mapSections();
-	bool reloc();
+	void mapSections();
+	void reloc();
 };
 

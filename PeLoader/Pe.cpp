@@ -17,7 +17,7 @@ Pe::Pe(const PeParser& peParser) :
 	mapSections();
 
 }
-bool Pe::mapSections()
+void Pe::mapSections()
 {
 	size_t numOfSections = m_peParser.getNtHeader()->FileHeader.NumberOfSections;
 	PIMAGE_SECTION_HEADER pSectionHeader = m_peParser.getSectionHeader();
@@ -30,9 +30,10 @@ bool Pe::mapSections()
 
 		std::memcpy( pInMemorySection, pPeRawData, sectionSize );
 	}
-	return true;
+}
+
+
+void Pe::reloc()
+{
+	//size_t sizeOfReloc = ;
 };
-
-
-
-
