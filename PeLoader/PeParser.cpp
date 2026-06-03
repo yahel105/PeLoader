@@ -8,6 +8,11 @@ PeParser::PeParser(const std::vector<char>& peFile) :
     m_pBase(const_cast<PVOID>(static_cast<LPCVOID>(peFile.data()))), 
     m_fileSize{peFile.size()}{}
 
+PVOID PeParser::getBaseAddress() const
+{
+    return m_pBase;
+}
+
 PIMAGE_DOS_HEADER PeParser::getDosHeader() const 
 {
 

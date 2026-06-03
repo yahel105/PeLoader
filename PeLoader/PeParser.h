@@ -7,6 +7,7 @@ class PeParser
 {
 public:
 	PeParser(const std::vector<char>& peFile);
+	PVOID getBaseAddress() const;
 	PIMAGE_DOS_HEADER getDosHeader() const;
 	PIMAGE_NT_HEADERS getNtHeader() const;
 	PIMAGE_SECTION_HEADER getSectionHeader() const;
