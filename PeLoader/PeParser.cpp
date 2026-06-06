@@ -1,11 +1,10 @@
-#include <iostream>
-#include <vector>
 #include <Windows.h>
+#include <span>
 #include "PeParser.h"
 #include "Utility.h"
 
-PeParser::PeParser(const std::vector<char>& peFile) : 
-    m_pBase(const_cast<PVOID>(static_cast<LPCVOID>(peFile.data()))), 
+PeParser::PeParser(std::span<const char> peFile) :
+    m_pBase(const_cast<char*>(peFile.data())), 
     m_fileSize{peFile.size()}{}
 
 PVOID PeParser::getBaseAddress() const

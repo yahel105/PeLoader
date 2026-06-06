@@ -1,9 +1,9 @@
 #pragma once
 #include "PeParser.h"
-class Pe
+class LoadedImage
 {
 public:
-	Pe(const PeParser& peParser);
+	LoadedImage(const PeParser& peParser);
 private:
 	const PeParser& m_peParser;
 	PVOID m_peBase;

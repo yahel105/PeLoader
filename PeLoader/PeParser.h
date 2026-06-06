@@ -1,12 +1,11 @@
 #pragma once
 #include <Windows.h>
-#include <iostream>
-#include <vector>
+#include <span>
 
 class PeParser
 {
 public:
-	PeParser(const std::vector<char>& peFile);
+	PeParser(std::span<const char> peFile);
 	PVOID getBaseAddress() const;
 	PIMAGE_DOS_HEADER getDosHeader() const;
 	PIMAGE_NT_HEADERS getNtHeader() const;

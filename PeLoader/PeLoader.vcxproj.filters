@@ -21,7 +21,7 @@
     <ClCompile Include="PeParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pe.cpp">
+    <ClCompile Include="LoadedImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,7 +32,7 @@
     <ClInclude Include="Utility.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pe.h">
+    <ClInclude Include="LoadedImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

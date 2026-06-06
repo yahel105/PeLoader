@@ -1,10 +1,10 @@
 #include <Windows.h>
-#include "Pe.h"
+#include "LoadedImage.h"
 #include "Utility.h"
 
-Pe::Pe(const PeParser& peParser) :
+LoadedImage::LoadedImage(const PeParser& peParser) :
 	m_peParser{ peParser },
-	m_peBase{ VirtualAlloc(nullptr,peParser.getNtHeader()->OptionalHeader.SizeOfImage, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE) }
+	m_peBase{ VirtualAlloc(reinterpret_cast<LPVOID>( peParser.getNtHeader()->OptionalHeader.ImageBase ),peParser.getNtHeader()->OptionalHeader.SizeOfImage, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE)}
 {
 	if (!m_peBase)
 	{
@@ -18,7 +18,7 @@ Pe::Pe(const PeParser& peParser) :
 	reloc();
 
 }
-void Pe::mapSections()
+void LoadedImage::mapSections()
 {
 	size_t numOfSections = m_peParser.getNtHeader()->FileHeader.NumberOfSections;
 	PIMAGE_SECTION_HEADER pSectionHeader = m_peParser.getSectionHeader();
@@ -37,7 +37,7 @@ void Pe::mapSections()
 	}
 }
 
-void Pe::reloc()
+void LoadedImage::reloc()
 {
 	typedef struct _BASE_RELOCATION_ENTRY {
 		WORD Offset : 12;
