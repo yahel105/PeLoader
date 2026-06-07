@@ -10,5 +10,6 @@ private:
 
 	void mapSections();
 	void reloc();
+	boolean resolveImports();
 };
 
