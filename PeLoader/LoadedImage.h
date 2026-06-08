@@ -11,5 +11,6 @@ private:
 	void mapSections();
 	void reloc();
 	boolean resolveImports();
+	boolean sectionsProtect();
 };
 

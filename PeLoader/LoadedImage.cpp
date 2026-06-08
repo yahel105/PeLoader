@@ -22,7 +22,10 @@ LoadedImage::LoadedImage(const PeParser& peParser) :
 	{
 		throw std::exception("[!]resolveImports() failed!");
 	}
-	
+	if (!sectionsProtect())
+	{
+		throw std::exception("[!]sectionsProtect() failed!");
+	}
 
 }
 void LoadedImage::mapSections()
@@ -142,6 +145,50 @@ boolean LoadedImage::resolveImports()
 
 
 		++importDirTable;
+	}
+	return true;
+}
+boolean LoadedImage::sectionsProtect()
+{
+	size_t numOfSections = m_peParser.getNtHeader()->FileHeader.NumberOfSections;
+	PIMAGE_SECTION_HEADER pSectionHeader = m_peParser.getSectionHeader();
+
+	DWORD sectionSize;
+	PVOID pInMemorySection;
+	DWORD characteristics;
+
+	for (size_t i = 0; i < numOfSections; i++)
+	{
+		pInMemorySection = resolve_rva<PVOID>(m_peBase, pSectionHeader[i].VirtualAddress);
+		sectionSize = pSectionHeader[i].SizeOfRawData;
+		characteristics = pSectionHeader[i].Characteristics;
+		DWORD protection{ PAGE_NOACCESS };
+		DWORD oldProtection{PAGE_NOACCESS};
+
+
+		if (characteristics & IMAGE_SCN_MEM_EXECUTE)
+		{
+			if (characteristics & IMAGE_SCN_MEM_READ && characteristics & IMAGE_SCN_MEM_WRITE)
+				protection = PAGE_EXECUTE_READWRITE;
+			else if (characteristics & IMAGE_SCN_MEM_READ)
+				protection = PAGE_EXECUTE_READ;
+			else
+				protection = PAGE_EXECUTE;
+		}
+		else if (characteristics & IMAGE_SCN_MEM_WRITE)
+		{
+			protection = PAGE_READWRITE;
+		}
+		else if (characteristics & IMAGE_SCN_MEM_READ)
+		{
+			protection = PAGE_READONLY;
+		}
+
+		if (oldProtection && sectionSize > 0)
+			if (!VirtualProtect(pInMemorySection, sectionSize, protection, &oldProtection))
+			{
+				return false;
+			}
 	}
 	return true;
 };
