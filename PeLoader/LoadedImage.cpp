@@ -17,16 +17,16 @@ LoadedImage::LoadedImage(const PeParser& peParser) :
 	}
 
 	mapSections();
-	reloc();
 	if (!resolveImports())
 	{
 		throw std::exception("[!]resolveImports() failed!");
 	}
+	reloc();
 	if (!sectionsProtect())
 	{
 		throw std::exception("[!]sectionsProtect() failed!");
 	}
-
+	execute();
 }
 void LoadedImage::mapSections()
 {
@@ -57,6 +57,7 @@ void LoadedImage::reloc()
 	PIMAGE_DATA_DIRECTORY relocDataDir = &m_peParser.getDataDir()[IMAGE_DIRECTORY_ENTRY_BASERELOC];
 	auto pRelocSection = resolve_rva<PIMAGE_BASE_RELOCATION>(m_peBase, relocDataDir->VirtualAddress);
 	size_t delta = reinterpret_cast<ULONGLONG>(m_peBase) - m_peParser.getNtHeader()->OptionalHeader.ImageBase;
+	std::cout << "[*] Reloc delta: 0x" << std::hex << delta << "\n";
 	PBASE_RELOCATION_ENTRY relocEntry{nullptr};
 
 	while (pRelocSection->VirtualAddress)
@@ -191,4 +192,19 @@ boolean LoadedImage::sectionsProtect()
 			}
 	}
 	return true;
+}
+void LoadedImage::execute()
+{
+	PVOID entryPointAddress{ resolve_rva<PVOID>(m_peBase ,m_peParser.getNtHeader()->OptionalHeader.AddressOfEntryPoint) };
+
+	std::cout << "[*] m_peBase: 0x" << std::hex << m_peBase << "\n";
+	std::cout << "[*] AddressOfEntryPoint RVA: 0x" << m_peParser.getNtHeader()->OptionalHeader.AddressOfEntryPoint << "\n";
+	std::cout << "[*] Entry point address: 0x" << entryPointAddress << "\n";
+	std::cout << "[*] ImageBase: 0x" << m_peParser.getNtHeader()->OptionalHeader.ImageBase << "\n";
+	std::cout << "[*] Delta: 0x" << (reinterpret_cast<ULONGLONG>(m_peBase) - m_peParser.getNtHeader()->OptionalHeader.ImageBase) << "\n";
+
+
+	using entryPoint = DWORD(WINAPI*)();
+	entryPoint run = reinterpret_cast<entryPoint>(entryPointAddress);
+	run();
 };

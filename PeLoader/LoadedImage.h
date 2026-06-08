@@ -12,5 +12,6 @@ private:
 	void reloc();
 	boolean resolveImports();
 	boolean sectionsProtect();
+	void execute();
 };
 
