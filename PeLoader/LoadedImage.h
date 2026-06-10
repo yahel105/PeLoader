@@ -1,5 +1,7 @@
 #pragma once
+#include <vector>
 #include "PeParser.h"
+#include "Utility.h"
 class LoadedImage
 {
 public:
@@ -9,9 +11,12 @@ public:
 	LoadedImage& operator=(const LoadedImage&) = delete;
 	LoadedImage(LoadedImage&&) = delete;
 	LoadedImage& operator=(LoadedImage&&) = delete;
+	~LoadedImage() = default;
+
 private:
 	const PeParser& m_peParser;
 	PVOID m_peBase;
+	std::vector<ModuleHandle> m_importedModules;
 
 	void mapSections();
 	boolean resolveImports();

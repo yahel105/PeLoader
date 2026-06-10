@@ -118,9 +118,7 @@ boolean LoadedImage::resolveImports()
 {
 	PIMAGE_DATA_DIRECTORY importData{ &m_peParser.getDataDir()[IMAGE_DIRECTORY_ENTRY_IMPORT] };
 	auto importDirTable{ resolve_rva<PIMAGE_IMPORT_DESCRIPTOR>(m_peBase ,importData->VirtualAddress) }; 
-//	auto importAddrTable{ resolve_rva<PIMAGE_THUNK_DATA>(m_peBase , importDirTable->FirstThunk) };
  	std::string_view dllName;
-	ModuleHandle hDll{ nullptr };
 	ULONG_PTR pFuncAddr{};
 
 	while (importDirTable->OriginalFirstThunk)
@@ -157,7 +155,7 @@ boolean LoadedImage::resolveImports()
 
 		}
 
-
+		m_importedModules.push_back(std::move(hDll));
 		++importDirTable;
 	}
 	return true;
