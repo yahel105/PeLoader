@@ -69,6 +69,8 @@ void LoadedImage::reloc()
 	std::cout << "[*] Reloc delta: 0x" << std::hex << delta << "\n";
 	PBASE_RELOCATION_ENTRY relocEntry{nullptr};
 
+	if (!relocDataDir->VirtualAddress) return;
+
 	while (pRelocSection->VirtualAddress)
 	{
 		relocEntry = reinterpret_cast<PBASE_RELOCATION_ENTRY>(pRelocSection + 1);
