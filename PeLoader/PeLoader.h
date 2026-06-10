@@ -10,7 +10,7 @@ class PeLoader
 
 public:
 	PeLoader(std::vector<char>&& fileBytes) :m_fileBytes{ std::move(fileBytes) }, m_peParser(m_fileBytes), m_loadedImage(m_peParser) {}
-	~PeLoader();
+	~PeLoader() = default;
 
 	PeLoader(const PeLoader&) = delete;
 	PeLoader& operator=(const PeLoader&) = delete;

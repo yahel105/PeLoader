@@ -2,9 +2,6 @@
 #include <iostream>
 #include <filesystem>
 #include <fstream>
-#include <span>
-#include "PeParser.h"
-#include "LoadedImage.h"
 #include "PeLoader.h"
 int main()
 {

@@ -145,7 +145,6 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LoadedImage.cpp" />
-    <ClCompile Include="PeLoader.cpp" />
     <ClCompile Include="PeParser.cpp" />
   </ItemGroup>
   <ItemGroup>
