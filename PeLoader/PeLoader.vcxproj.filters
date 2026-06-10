@@ -24,6 +24,9 @@
     <ClCompile Include="LoadedImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PeLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PeParser.h">
@@ -33,6 +36,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="LoadedImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PeLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -11,6 +11,11 @@ public:
 	PIMAGE_NT_HEADERS getNtHeader() const;
 	PIMAGE_SECTION_HEADER getSectionHeader() const;
 	PIMAGE_DATA_DIRECTORY getDataDir() const;
+
+	PeParser(const PeParser&) = delete;
+	PeParser& operator=(const PeParser&) = delete;
+	PeParser(PeParser&&) = delete;
+	PeParser& operator=(PeParser&&) = delete;
 private:
 	PVOID m_pBase;
 	size_t m_fileSize;
