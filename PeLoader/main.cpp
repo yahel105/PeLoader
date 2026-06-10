@@ -7,7 +7,8 @@
 
 int main()
 {
-	std::filesystem::path pePath{ "../x64/Debug/HelloWorld.exe" };
+	//std::filesystem::path pePath{ "../x64/Debug/HelloWorld.exe" };
+	std::filesystem::path pePath{ "C:/HelloWorldCRT.exe" };
 	//std::filesystem::path pePath{ "C:/HelloWorld.exe" };
 	//std::filesystem::path pePath{ "C:/Windows/notepad.exe" };
 	std::ifstream file(pePath , std::ios::binary);

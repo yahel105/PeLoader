@@ -17,15 +17,24 @@ LoadedImage::LoadedImage(const PeParser& peParser) :
 	}
 
 	mapSections();
+
+	if (!registerExeptionHandlers())
+	{
+		throw std::exception("[!]registerExeptionHandlers() failed!");
+	}
+
 	if (!resolveImports())
 	{
 		throw std::exception("[!]resolveImports() failed!");
 	}
+
 	reloc();
+
 	if (!sectionsProtect())
 	{
 		throw std::exception("[!]sectionsProtect() failed!");
 	}
+	//////////
 	execute();
 }
 void LoadedImage::mapSections()
@@ -142,6 +151,8 @@ boolean LoadedImage::resolveImports()
 			importAddressTable->u1.Function = pFuncAddr;
 			pFuncAddr = NULL;
 			++importLookupTable;
+			++importAddressTable;
+
 		}
 
 
@@ -149,6 +160,17 @@ boolean LoadedImage::resolveImports()
 	}
 	return true;
 }
+boolean LoadedImage::registerExeptionHandlers()
+{
+	auto exceptionDataDir{ m_peParser.getDataDir()[IMAGE_DIRECTORY_ENTRY_EXCEPTION] };
+	auto exeptionDirEntry{ resolve_rva<PIMAGE_RUNTIME_FUNCTION_ENTRY>(m_peBase, exceptionDataDir.VirtualAddress) };
+
+	if (!RtlAddFunctionTable(exeptionDirEntry, (exceptionDataDir.Size / sizeof(IMAGE_RUNTIME_FUNCTION_ENTRY)), reinterpret_cast<DWORD64> (m_peBase)))
+	{
+		return false;
+	}
+	return true;
+};
 boolean LoadedImage::sectionsProtect()
 {
 	size_t numOfSections = m_peParser.getNtHeader()->FileHeader.NumberOfSections;
@@ -197,6 +219,8 @@ void LoadedImage::execute()
 {
 	PVOID entryPointAddress{ resolve_rva<PVOID>(m_peBase ,m_peParser.getNtHeader()->OptionalHeader.AddressOfEntryPoint) };
 
+
+	std::cout << "[*] TLSDataDir Size: " << m_peParser.getDataDir()[IMAGE_DIRECTORY_ENTRY_TLS].Size << "\n";
 	std::cout << "[*] m_peBase: 0x" << std::hex << m_peBase << "\n";
 	std::cout << "[*] AddressOfEntryPoint RVA: 0x" << m_peParser.getNtHeader()->OptionalHeader.AddressOfEntryPoint << "\n";
 	std::cout << "[*] Entry point address: 0x" << entryPointAddress << "\n";

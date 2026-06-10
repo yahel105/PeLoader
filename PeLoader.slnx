@@ -4,5 +4,6 @@
     <Platform Name="x86" />
   </Configurations>
   <Project Path="HelloWorld/HelloWorld.vcxproj" Id="4d5e2ab1-d4bd-4ba7-be0c-ba4cf9ea34ed" />
+  <Project Path="HelloWorldCRT/HelloWorldCRT.vcxproj" Id="1f7f7a9c-0e2e-4cca-8139-dbf0ef126bc8" />
   <Project Path="PeLoader/PeLoader.vcxproj" Id="c794d505-261f-42e0-ab64-5683cae8e3d5" />
 </Solution>

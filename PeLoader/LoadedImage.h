@@ -9,8 +9,9 @@ private:
 	PVOID m_peBase;
 
 	void mapSections();
-	void reloc();
 	boolean resolveImports();
+	boolean registerExeptionHandlers();
+	void reloc();
 	boolean sectionsProtect();
 	void execute();
 };
