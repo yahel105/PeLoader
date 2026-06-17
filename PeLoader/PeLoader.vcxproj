@@ -143,13 +143,16 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="LoadedImage.cpp" />
     <ClCompile Include="PeParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LoadedImage.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="PeLoader.h" />
+    <ClInclude Include="PeLoaderError.h" />
     <ClInclude Include="PeParser.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>

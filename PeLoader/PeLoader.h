@@ -4,7 +4,6 @@
 #include "PeParser.h"
 
 
-
 class PeLoader
 {
 

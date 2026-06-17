@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <span>
 
+
 class PeParser
 {
 public:

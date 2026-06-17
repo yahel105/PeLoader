@@ -3,6 +3,7 @@
 #include "PeParser.h"
 #include "Utility.h"
 
+
 PeParser::PeParser(std::span<const char> peFile) :
     m_pBase(const_cast<char*>(peFile.data())), 
     m_fileSize{peFile.size()}{}
