@@ -2,6 +2,9 @@
 #include <iostream>
 #include "LoadedImage.h"
 #include "Utility.h"
+#include "PeLoaderError.h"
+
+
 
 LoadedImage::LoadedImage(const PeParser& peParser) :
 	m_peParser{ peParser },
@@ -13,28 +16,29 @@ LoadedImage::LoadedImage(const PeParser& peParser) :
 	}
 	if (!m_peBase)
 	{
-		throw std::bad_alloc();
+		throw PeLoaderError("[!]Bad Allocation(VirtualAlloc)");
 	}
 
 	mapSections();
 
 	if (!registerExeptionHandlers())
 	{
-		throw std::exception("[!]registerExeptionHandlers() failed!");
+		throw PeLoaderError("[!]registerExeptionHandlers() failed!");
 	}
 
 	if (!resolveImports())
 	{
-		throw std::exception("[!]resolveImports() failed!");
+		throw PeLoaderError("[!]resolveImports() failed!");
 	}
 
 	reloc();
 
 	if (!sectionsProtect())
 	{
-		throw std::exception("[!]sectionsProtect() failed!");
+		throw PeLoaderError("[!]sectionsProtect() failed!");
 	}
 	//////////
+
 	execute();
 }
 void LoadedImage::mapSections()
@@ -55,6 +59,8 @@ void LoadedImage::mapSections()
 		std::memcpy( pInMemorySection, pPeRawData, sectionSize );
 	}
 }
+
+bool IsValidRelocTarget(PVOID base, size_t imageSize, void* toReloc, size_t width);
 
 void LoadedImage::reloc()
 {
@@ -83,24 +89,58 @@ void LoadedImage::reloc()
 			case IMAGE_REL_BASED_DIR64:
 			{
 				auto toReloc = resolve_rva<ULONG_PTR*>(m_peBase, static_cast<size_t>(pRelocSection->VirtualAddress) + relocEntry->Offset);
-				*toReloc += delta;
+				ULONGLONG value;
+
+				if (!IsValidRelocTarget(m_peBase, m_peParser.getNtHeader()->OptionalHeader.SizeOfImage, toReloc, sizeof(value)))
+				{
+					//log
+				}
+				std::memcpy(&value, toReloc, sizeof(value));
+				value += delta;
+				std::memcpy(toReloc, &value, sizeof(value));
 			} break;
 			case IMAGE_REL_BASED_HIGHLOW:
 			{
 				auto toReloc = resolve_rva<PDWORD>(m_peBase, static_cast<size_t>(pRelocSection->VirtualAddress) + relocEntry->Offset);
-				*toReloc += static_cast<DWORD>(delta);
+				DWORD value{};
+
+				if (!IsValidRelocTarget(m_peBase, m_peParser.getNtHeader()->OptionalHeader.SizeOfImage, toReloc, sizeof(value)))
+				{
+					//log
+				}
+				std::memcpy(&value, toReloc, sizeof(value));
+				value += static_cast<DWORD>(delta);
+				std::memcpy(toReloc, &value, sizeof(value));
+
 			}break;
 
 			case IMAGE_REL_BASED_HIGH:
 			{
 				auto toReloc = resolve_rva<PWORD>(m_peBase, static_cast<size_t>(pRelocSection->VirtualAddress) + relocEntry->Offset);
-				*toReloc += HIWORD(delta);
+				WORD value;
+
+				if (!IsValidRelocTarget(m_peBase, m_peParser.getNtHeader()->OptionalHeader.SizeOfImage, toReloc, sizeof(value)))
+				{
+					//log
+				}
+				std::memcpy(&value, toReloc, sizeof(value));
+				value += HIWORD(delta);
+				std::memcpy(toReloc, &value, sizeof(value));
+
 			}break;
 
 			case IMAGE_REL_BASED_LOW:
 			{
 				auto toReloc = resolve_rva<PWORD>(m_peBase, static_cast<size_t>(pRelocSection->VirtualAddress) + relocEntry->Offset);
-				*toReloc += LOWORD(delta);
+				WORD value;
+
+				if (!IsValidRelocTarget(m_peBase, m_peParser.getNtHeader()->OptionalHeader.SizeOfImage, toReloc, sizeof(value)))
+				{
+					//log
+				}
+				std::memcpy(&value, toReloc, sizeof(value));
+				value += LOWORD(delta);
+				std::memcpy(toReloc, &value, sizeof(value));
 			}break;
 
 			default:
@@ -126,7 +166,7 @@ boolean LoadedImage::resolveImports()
 		PIMAGE_THUNK_DATA importLookupTable{ resolve_rva<PIMAGE_THUNK_DATA>(m_peBase , importDirTable->OriginalFirstThunk) };
 		PIMAGE_THUNK_DATA importAddressTable{ resolve_rva<PIMAGE_THUNK_DATA>(m_peBase , importDirTable->FirstThunk) };
 		dllName = { resolve_rva<LPSTR>(m_peBase , importDirTable->Name) };
-		
+		//Using Ascii LoadLibrary because dll names are listed as ascii
 		ModuleHandle hDll{ LoadLibraryA(dllName.data()) };
 		if (!hDll.get())
 		{
@@ -226,9 +266,19 @@ void LoadedImage::execute()
 	std::cout << "[*] Entry point address: 0x" << entryPointAddress << "\n";
 	std::cout << "[*] ImageBase: 0x" << m_peParser.getNtHeader()->OptionalHeader.ImageBase << "\n";
 	std::cout << "[*] Delta: 0x" << (reinterpret_cast<ULONGLONG>(m_peBase) - m_peParser.getNtHeader()->OptionalHeader.ImageBase) << "\n";
-
+	std::cout << "////////////////////////////////////////////////////////////////////////" << "\n\n\n";
 
 	using entryPoint = DWORD(WINAPI*)();
 	entryPoint run = reinterpret_cast<entryPoint>(entryPointAddress);
 	run();
+};
+
+bool IsValidRelocTarget(PVOID base, size_t imageSize, void* toReloc, size_t width) {
+	auto start = reinterpret_cast<uintptr_t>(base);
+	auto end = start + imageSize;
+	auto addr = reinterpret_cast<uintptr_t>(toReloc);
+
+	if (addr < start || addr > end) return false;
+	if (width > end - addr) return false;
+	return true;
 };
