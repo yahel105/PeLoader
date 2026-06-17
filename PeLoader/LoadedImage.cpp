@@ -21,9 +21,9 @@ LoadedImage::LoadedImage(const PeParser& peParser) :
 
 	mapSections();
 
-	if (!registerExeptionHandlers())
+	if (!registerExceptionHandlers())
 	{
-		throw PeLoaderError("[!]registerExeptionHandlers() failed!");
+		throw PeLoaderError("[!]registerExceptionHandlers() failed!");
 	}
 
 	if (!resolveImports())
@@ -59,8 +59,6 @@ void LoadedImage::mapSections()
 		std::memcpy( pInMemorySection, pPeRawData, sectionSize );
 	}
 }
-
-bool IsValidRelocTarget(PVOID base, size_t imageSize, void* toReloc, size_t width);
 
 void LoadedImage::reloc()
 {
@@ -154,7 +152,7 @@ void LoadedImage::reloc()
 
 
 }
-boolean LoadedImage::resolveImports()
+bool LoadedImage::resolveImports()
 {
 	PIMAGE_DATA_DIRECTORY importData{ &m_peParser.getDataDir()[IMAGE_DIRECTORY_ENTRY_IMPORT] };
 	auto importDirTable{ resolve_rva<PIMAGE_IMPORT_DESCRIPTOR>(m_peBase ,importData->VirtualAddress) }; 
@@ -200,7 +198,7 @@ boolean LoadedImage::resolveImports()
 	}
 	return true;
 }
-boolean LoadedImage::registerExeptionHandlers()
+bool LoadedImage::registerExceptionHandlers()
 {
 	auto exceptionDataDir{ m_peParser.getDataDir()[IMAGE_DIRECTORY_ENTRY_EXCEPTION] };
 	auto exeptionDirEntry{ resolve_rva<PIMAGE_RUNTIME_FUNCTION_ENTRY>(m_peBase, exceptionDataDir.VirtualAddress) };
@@ -211,7 +209,7 @@ boolean LoadedImage::registerExeptionHandlers()
 	}
 	return true;
 };
-boolean LoadedImage::sectionsProtect()
+bool LoadedImage::sectionsProtect()
 {
 	size_t numOfSections = m_peParser.getNtHeader()->FileHeader.NumberOfSections;
 	PIMAGE_SECTION_HEADER pSectionHeader = m_peParser.getSectionHeader();

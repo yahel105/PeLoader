@@ -21,10 +21,11 @@ private:
 	std::vector<ModuleHandle> m_importedModules;
 
 	void mapSections();
-	boolean resolveImports();
-	boolean registerExeptionHandlers();
+	bool resolveImports();
+	bool registerExceptionHandlers();
 	void reloc();
-	boolean sectionsProtect();
+	bool sectionsProtect();
 	void execute();
 };
 
+bool IsValidRelocTarget(PVOID base, size_t imageSize, void* toReloc, size_t width);
