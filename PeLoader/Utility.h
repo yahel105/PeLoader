@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <variant>
 
+
 template <typename T, typename PBase>
 T resolve_rva(PBase base, size_t offset)
 {
@@ -24,3 +25,4 @@ struct HModuleDeleter {
 };
 using ModuleHandle = std::unique_ptr<void,HModuleDeleter>;
 
+enum class LogLevel { Info, Warn, Error };

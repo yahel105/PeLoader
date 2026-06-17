@@ -3,6 +3,11 @@
 #include <filesystem>
 #include <fstream>
 #include "PeLoader.h"
+#include "PeLoaderError.h"
+#include "Logger.h"
+#include "Utility.h"
+
+
 int main()
 {
     std::filesystem::path pePath{ "C:/HelloWorldCRT.exe" };
@@ -22,7 +27,16 @@ int main()
         std::cerr << "PE file is empty.\n";
         return 1;
     }
+    
+    Logger& logger = Logger::instance();
+    logger.setLogToFile();
 
-
-    PeLoader PE(std::move(fileBytes));
+    try {
+       PeLoader PE(std::move(fileBytes));
+    }
+    catch (PeLoaderError& error)
+    {
+        logger.log(error.m_logLevel, error.what());
+        return 1;
+    }
 }
