@@ -12,11 +12,13 @@ int main()
 {
     std::filesystem::path pePath{ "C:/HelloWorldCRT.exe" };
     std::vector<char> fileBytes;
+    Logger& logger = Logger::instance();
+    logger.setLogToFile();
 
     {
         std::ifstream file(pePath, std::ios::binary);
         if (!file.is_open()) {
-            std::cerr << "Failed to open PE file.\n";
+            logger.log(LogLevel::Error, "Failed to open PE file");
             return 1;
         }
 
@@ -24,12 +26,10 @@ int main()
     }
 
     if (fileBytes.empty()) {
-        std::cerr << "PE file is empty.\n";
+        logger.log(LogLevel::Error, "PE file is empty.");
         return 1;
     }
     
-    Logger& logger = Logger::instance();
-    logger.setLogToFile();
 
     try {
        PeLoader PE(std::move(fileBytes));
